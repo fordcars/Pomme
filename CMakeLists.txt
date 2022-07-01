@@ -112,6 +112,14 @@ else()
 	add_compile_definitions(POMME_NO_QD3D)
 endif()
 
+if (NOT(POMME_NO_NETWORK))
+	list(APPEND POMME_SOURCES
+		${POMME_SRCDIR}/Network/Network.cpp
+	)
+else()
+	add_compile_definitions(POMME_NO_NETWORK)
+endif()
+
 add_library(${PROJECT_NAME} ${POMME_SOURCES})
 
 find_package(SDL2 REQUIRED)
