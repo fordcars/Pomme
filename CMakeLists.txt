@@ -114,7 +114,9 @@ endif()
 
 if (NOT(POMME_NO_NETWORK))
 	list(APPEND POMME_SOURCES
-		${POMME_SRCDIR}/Network/Network.cpp
+		${POMME_SRCDIR}/Network/NetSprocket.cpp
+		${POMME_SRCDIR}/Network/NetGame.cpp
+		${POMME_SRCDIR}/Network/NetGame.h
 	)
 else()
 	add_compile_definitions(POMME_NO_NETWORK)

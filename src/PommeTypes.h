@@ -75,6 +75,7 @@ typedef char                            Str32[33];
 typedef char                            Str63[64];
 typedef char                            Str255[256];
 typedef char*							StringPtr;
+typedef const char *ConstStr31Param;
 typedef const char*                     ConstStr255Param;
 
 //-----------------------------------------------------------------------------
@@ -301,3 +302,38 @@ typedef struct NumVersion
 	UInt8               majorRev;               // 1st part of version number in BCD
 } NumVersion;
 #endif
+
+//-----------------------------------------------------------------------------
+// Network types
+enum
+{
+	kNSpGameFlag_DontAdvertise = 0x00000001,
+	kNSpGameFlag_ForceTerminateGame = 0x00000002
+};
+
+typedef int   NSpGameID;
+typedef int   NSpFlags;
+typedef void *NSpEventProcPtr;
+typedef int   NSpPlayerType;
+
+#ifdef __cplusplus
+	namespace Pomme::Network
+	{
+		class NetGame;
+	}
+	using PommeNetGame = Pomme::Network::NetGame;
+#else
+	typedef struct PommeNetGame PommeNetGame;
+#endif
+
+typedef struct
+{
+	PommeNetGame *game;
+} NSpGamePrivate, *NSpGameReference;
+
+typedef struct NSpListPrivate *NSpProtocolListReference;
+
+typedef enum
+{
+	kNSpClientServer = 0x00000001
+} NSpTopology;

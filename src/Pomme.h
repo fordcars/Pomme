@@ -495,6 +495,33 @@ Boolean Pomme_DecompressSoundResource(SndListHandle* sndHandlePtr, long* offsetT
 // Pomme extension
 SndListHandle Pomme_SndLoadFileAsResource(short fRefNum);
 
+//-----------------------------------------------------------------------------
+// Network
+OSStatus NSpInitialize(UInt32 inStandardMessageSize, UInt32 inBufferSize,
+	UInt32 inQElements, NSpGameID inGameID, UInt32 inTimeout);
+
+OSStatus NSpGame_Delete(NSpGameReference inGame, NSpFlags inFlags);
+
+// Alias
+static inline OSStatus NSpGame_Dispose(NSpGameReference inGame, NSpFlags inFlags)
+{
+	return NSpGame_Delete(inGame, inFlags);
+}
+
+Boolean NSpDoModalHostDialog(NSpProtocolListReference ioProtocolList, Str31 ioGameName,
+	Str31 ioPlayerName, Str31 ioPassword, NSpEventProcPtr inEventProcPtr);
+
+OSStatus NSpGame_Host(
+	NSpGameReference *outGame,
+	NSpProtocolListReference inProtocolList,
+	UInt32 inMaxPlayers,
+	ConstStr31Param inGameName,
+	ConstStr31Param inPassword,
+	ConstStr31Param inPlayerName,
+	NSpPlayerType inPlayerType,
+	NSpTopology inTopology,
+	NSpFlags inFlags);
+
 #ifdef __cplusplus
 }
 #endif
