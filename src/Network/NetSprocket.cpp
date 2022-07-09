@@ -1,3 +1,5 @@
+#define __STDC_WANT_LIB_EXT1__ // For strcpy_s
+#include <string.h>
 #include "Pomme.h"
 #include "Network/NetGame.h"
 
@@ -20,26 +22,43 @@ OSStatus NSpGame_Delete(NSpGameReference inGame, NSpFlags /*inFlags*/)
 	return 0;
 }
 
-Boolean NSpDoModalHostDialog(NSpProtocolListReference /*ioProtocolList*/, Str31 /*ioGameName*/,
-	Str31 /*ioPlayerName*/, Str31 /*ioPassword*/, NSpEventProcPtr /*inEventProcPtr*/)
+OSStatus NSpProtocolList_Create(NSpProtocolReference inProtocolRef, NSpProtocolListReference *outList)
 {
+	*outList = new NSpListPrivate{};
+	(*outList)->protocol = (inProtocolRef == NULL) ? NSpProtocolPrivate{} : *inProtocolRef;
+	return 0;
+}
+
+void NSpProtocolList_Delete(NSpProtocolListReference inProtocolList)
+{
+	delete inProtocolList;
+}
+
+Boolean NSpDoModalHostDialog(NSpProtocolListReference ioProtocolList, Str31 ioGameName,
+	Str31 ioPlayerName, Str31 ioPassword, NSpEventProcPtr /*inEventProcPtr*/)
+{
+	// These will be set in the dialog
+	ioProtocolList->protocol.port = 2500;
+	strcpy_s(ioGameName, sizeof(Str31), "MyGame");
+	strcpy_s(ioPlayerName, sizeof(Str31), "ImTheHost");
+	strcpy_s(ioPassword, sizeof(Str31), "password");
 	return true;
 }
 
 OSStatus NSpGame_Host(
 	NSpGameReference *outGame,
-	NSpProtocolListReference /*inProtocolList*/,
-	UInt32                   /*inMaxPlayers*/,
-	ConstStr31Param          /*inGameName*/,
-	ConstStr31Param          /*inPassword*/,
+	NSpProtocolListReference inProtocolList,
+	UInt32                   inMaxPlayers,
+	ConstStr31Param          inGameName,
+	ConstStr31Param          inPassword,
 	ConstStr31Param          /*inPlayerName*/,
 	NSpPlayerType            /*inPlayerType*/,
 	NSpTopology              /*inTopology*/,
 	NSpFlags                 /*inFlags*/)
 {
 	*outGame = new NSpGamePrivate{};
-	(*outGame)->game = new NetGame();
-	(*outGame)->game->startListening(2500, false);
+	(*outGame)->game = new NetGame(inGameName);
+	(*outGame)->game->startListening(inPassword, inMaxPlayers, inProtocolList->protocol.port, false);
 	return 0;
 }
 

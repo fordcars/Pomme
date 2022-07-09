@@ -311,10 +311,17 @@ enum
 	kNSpGameFlag_ForceTerminateGame = 0x00000002
 };
 
+enum
+{
+	kVariableLengthArray = 1024 // No idea what the actual value should be
+};
+
 typedef int   NSpGameID;
 typedef int   NSpFlags;
 typedef void *NSpEventProcPtr;
 typedef int   NSpPlayerType;
+typedef int   NSpPlayerID;
+typedef int   NSpGroupID;
 
 #ifdef __cplusplus
 	namespace Pomme::Network
@@ -331,8 +338,31 @@ typedef struct
 	PommeNetGame *game;
 } NSpGamePrivate, *NSpGameReference;
 
-typedef struct NSpProtocolPrivate *NSpProtocolReference;
-typedef struct NSpListPrivate *NSpProtocolListReference;
+// Define our own structs for ease of implementation
+typedef struct
+{
+	int port;
+} NSpProtocolPrivate, *NSpProtocolReference;
+typedef struct
+{
+	NSpProtocolPrivate protocol;
+} NSpListPrivate, *NSpProtocolListReference;
+
+typedef struct NSpPlayerInfo
+{
+	NSpPlayerID                id;
+	NSpPlayerType              type;
+	Str31                      name;
+	UInt32                     groupCount;
+	NSpGroupID                 groups[kVariableLengthArray];
+} NSpPlayerInfo, *NSpPlayerInfoPtr;
+
+typedef struct NSpGroupInfo
+{
+	NSpGroupID                 id;
+	UInt32                     playerCount;
+	NSpPlayerID                players[kVariableLengthArray];
+} NSpGroupInfo, *NSpGroupInfoPtr;
 
 typedef enum
 {

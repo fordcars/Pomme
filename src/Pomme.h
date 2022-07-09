@@ -508,6 +508,16 @@ static inline OSStatus NSpGame_Dispose(NSpGameReference inGame, NSpFlags inFlags
 	return NSpGame_Delete(inGame, inFlags);
 }
 
+OSStatus NSpProtocolList_Create(NSpProtocolReference inProtocolRef, NSpProtocolListReference *outList);
+
+// Alias
+static inline OSStatus NSpProtocolList_New(NSpProtocolReference inProtocolRef, NSpProtocolListReference *outList)
+{
+	return NSpProtocolList_Create(inProtocolRef, outList);
+}
+
+void NSpProtocolList_Delete(NSpProtocolListReference inProtocolList);
+
 Boolean NSpDoModalHostDialog(NSpProtocolListReference ioProtocolList, Str31 ioGameName,
 	Str31 ioPlayerName, Str31 ioPassword, NSpEventProcPtr inEventProcPtr);
 

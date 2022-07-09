@@ -17,10 +17,22 @@
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <netdb.h>
+	#include <fcntl.h>
 #endif
 
 #define LOG POMME_GENLOG(POMME_DEBUG_NET, "NET")
 using namespace Pomme::Network;
+
+std::string getSockErrorStr()
+{
+#ifdef _WIN32
+	return std::to_string(WSAGetLastError());
+#else
+	char errorStr[255];
+	strerror_s(errorStr, sizeof(errorStr), errno);
+	return errorStr;
+#endif
+}
 
 unsigned getPort(int addrFamily, const sockaddr &addr)
 {
@@ -68,7 +80,8 @@ std::ostream &operator<<(std::ostream &lhs, const addrinfo& rhs)
 	return lhs;
 }
 
-NetGame::NetGame()
+NetGame::NetGame(const std::string& gameName)
+	: mGameName(gameName)
 {
 #ifdef _WIN32
 	// Windows-specific socket setup
@@ -117,7 +130,6 @@ int NetGame::createListeningSocket(int port, bool supportIPv6)
 
 	// Loop through all address results and bind to the first one we can
 	addrinfo *p = nullptr;
-	char errorStr[255];
 	for(p = servInfoRes.get(); p != NULL; p = p->ai_next)
 	{
 		int sock = 0;
@@ -127,29 +139,42 @@ int NetGame::createListeningSocket(int port, bool supportIPv6)
 
 		if((sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
 		{
-			strerror_s(errorStr, sizeof(errorStr), errno);
-			LOG << "socket attempt failed: " << errorStr << std::endl;
+			LOG << "socket attempt failed: " << getSockErrorStr() << std::endl;
 			continue;
 		}
 
 		// Only warn if this fails
 		if(setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&yes, sizeof(yes)) == -1)
 		{
-			strerror_s(errorStr, sizeof(errorStr), errno);
-			std::cout << "Warning: can't set SO_REUSEADDR: " << errorStr << std::endl;
+			std::cout << "Warning: can't set SO_REUSEADDR: " << getSockErrorStr() << std::endl;
 		}
 
 		if(bind(sock, p->ai_addr, static_cast<int>(p->ai_addrlen)) == -1)
 		{
-			strerror_s(errorStr, sizeof(errorStr), errno);
-			LOG << "bind attempt failed: " << errorStr << std::endl;
+			LOG << "bind attempt failed: " << getSockErrorStr() << std::endl;
 			continue;
 		}
 
+		// Set non-blocking
+#ifdef _WIN32
+		u_long iMode = 1;
+		int iResult = ioctlsocket(sock, FIONBIO, &iMode);
+		if(iResult != NO_ERROR)
+		{
+			std::cerr << "Can't set socket as non-blocking, error: " << iResult << std::endl;
+			continue;
+		}
+#else
+		if(fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, 0) | O_NONBLOCK) == -1)
+		{
+			std::cerr << "Can't set socket as non-blocking, error: " << getSockErrorStr() << std::endl;
+			continue;
+		}
+#endif
+
 		if(listen(sock, ACCEPT_BACKLOG) == -1)
 		{
-			strerror_s(errorStr, sizeof(errorStr), errno);
-			LOG << "listen attempt failed: " << errorStr << std::endl;
+			std::cerr << "Can't listen on socket error: " << getSockErrorStr() << std::endl;
 			continue;
 		}
 
@@ -163,7 +188,7 @@ int NetGame::createListeningSocket(int port, bool supportIPv6)
 }
 
 // Returns false on failure
-bool NetGame::startListening(int port, bool supportIPv6)
+bool NetGame::startListening(const std::string &password, unsigned maxPlayers, int port, bool supportIPv6)
 {
 	if(mListening)
 		return false;
@@ -176,6 +201,28 @@ bool NetGame::startListening(int port, bool supportIPv6)
 		return false;
 	}
 
+	mListeningThread = std::thread([this, listenSock]()
+	{
+		while(mListening)
+		{
+			sockaddr_storage addr {};
+			socklen_t addrLen = sizeof(addr);
+
+			int socket = accept(listenSock, reinterpret_cast<sockaddr*>(&addr), &addrLen);
+			if(socket != -1)
+			{
+				// Incoming connection
+			}
+#ifdef _WIN32
+			else if(socket == -1 && !(WSAGetLastError() == WSAEWOULDBLOCK))
+#else
+			else if(socket == -1 && !(errno == EWOULDBLOCK || errno == EAGAIN))
+#endif
+			{
+				std::cerr << "Socket accept error: " << getSockErrorStr() << std::endl;
+			}
+		}
+	});
 
 	return true;
 }
