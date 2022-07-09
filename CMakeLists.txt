@@ -143,6 +143,9 @@ if(MSVC)
 	# Note that this is not required with "cmake_minimum_required(VERSION 3.15)" or later
 	string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
+    # Add WinSock libraries
+	target_link_libraries(${PROJECT_NAME} wsock32 ws2_32)
+
 	# On Win32, we need NOGDI and NOUSER to be able to define some Mac functions
 	# whose names are otherwise taken by Windows APIs.
 	target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN NOGDI NOUSER)
