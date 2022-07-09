@@ -331,6 +331,7 @@ typedef struct
 	PommeNetGame *game;
 } NSpGamePrivate, *NSpGameReference;
 
+typedef struct NSpProtocolPrivate *NSpProtocolReference;
 typedef struct NSpListPrivate *NSpProtocolListReference;
 
 typedef enum

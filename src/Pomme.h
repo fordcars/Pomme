@@ -522,6 +522,10 @@ OSStatus NSpGame_Host(
 	NSpTopology inTopology,
 	NSpFlags inFlags);
 
+
+OSStatus NSpGame_EnableAdvertising( NSpGameReference inGame, NSpProtocolReference inProtocol, Boolean inEnable);
+
+
 #ifdef __cplusplus
 }
 #endif
