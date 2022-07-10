@@ -21,30 +21,47 @@
 #define LOG POMME_GENLOG(POMME_DEBUG_NET, "NET_BASE")
 using namespace Pomme::Network;
 
-// IP-agnostic print operator
-std::ostream &Pomme::Network::operator<<(std::ostream &lhs, const addrinfo &rhs)
+// Print operators
+std::ostream &Pomme::Network::operator<<(std::ostream &lhs, const sockaddr &rhs)
 {
 	char ipStr[INET6_ADDRSTRLEN];
-	const void *addr = nullptr;
+	const void *inAddr = nullptr;
+	unsigned port = 0;
 
-	// Get addr acccording to IP version
-	if(rhs.ai_family == AF_INET)
+	// Get in_addr and port acccording to IP version
+	if(rhs.sa_family == AF_INET)
 	{
 		// IPv4
-		const sockaddr_in *ipv4 = reinterpret_cast<const sockaddr_in *>(rhs.ai_addr);
-		addr = &(ipv4->sin_addr);
+		const sockaddr_in &ipv4 = reinterpret_cast<const sockaddr_in &>(rhs);
+		inAddr = &(ipv4.sin_addr);
+		port = ntohs(ipv4.sin_port);
 	}
 	else
 	{
 		// IPv6
-		const sockaddr_in6 *ipv6 = reinterpret_cast<const sockaddr_in6 *>(rhs.ai_addr);
-		addr = &(ipv6->sin6_addr);
+		const sockaddr_in6 &ipv6 = reinterpret_cast<const sockaddr_in6 &>(rhs);
+		inAddr = &(ipv6.sin6_addr);
+		port = ntohs(ipv6.sin6_port);
+
 	}
 
 	// Convert to string
-	inet_ntop(rhs.ai_family, addr, ipStr, sizeof(ipStr));
+	inet_ntop(rhs.sa_family, inAddr, ipStr, sizeof(ipStr));
 	lhs << ipStr;
+	if(port > 0)
+		lhs << ':' << port;
+
 	return lhs;
+}
+
+std::ostream &Pomme::Network::operator<<(std::ostream &lhs, const sockaddr_storage &rhs)
+{
+	return lhs << reinterpret_cast<const sockaddr &>(rhs);
+}
+
+std::ostream &Pomme::Network::operator<<(std::ostream &lhs, const addrinfo &rhs)
+{
+	return lhs << *rhs.ai_addr;
 }
 
 NetGame::NetGame()
@@ -79,22 +96,12 @@ std::string NetGame::getSockErrorStr()
 #endif
 }
 
-unsigned NetGame::getPortFromAddr(int addrFamily, const sockaddr &addr)
+void NetGame::setGameName(const std::string &gameName)
 {
-	unsigned port = 0;
+	mGameName = gameName;
+}
 
-	if(addrFamily == AF_INET)
-	{
-		// IPv4
-		const sockaddr_in *ipv4 = reinterpret_cast<const sockaddr_in *>(&addr);
-		port = ntohs(ipv4->sin_port);
-	}
-	else
-	{
-		// IPv6
-		const sockaddr_in6 *ipv6 = reinterpret_cast<const sockaddr_in6 *>(&addr);
-		port = ntohs(ipv6->sin6_port);
-	}
-
-	return port;
+std::string NetGame::getGameName()
+{
+	return mGameName;
 }

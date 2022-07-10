@@ -101,7 +101,7 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 
 		// We've got a valid socket!
 		getsockname(sock, &boundAddr, &boundAddrLen);
-		std::cout << "Listening on port: " << getPortFromAddr(p->ai_family, boundAddr) << std::endl;
+		std::cout << "Listening on: " << boundAddr << std::endl;
 		return sock;
 	}
 
@@ -109,7 +109,8 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 }
 
 // Returns false on failure
-bool NetGameHost::startListening(const std::string &password, unsigned maxPlayers, int port, bool supportIPv6)
+bool NetGameHost::startListening(const std::string &gameName, const std::string &password,
+	unsigned maxPlayers, int port, bool supportIPv6)
 {
 	if(mListening)
 		return false;
@@ -132,7 +133,11 @@ bool NetGameHost::startListening(const std::string &password, unsigned maxPlayer
 				int socket = accept(listenSock, reinterpret_cast<sockaddr *>(&addr), &addrLen);
 				if(socket != -1)
 				{
-					std::cerr << "Accepting connection" << std::endl;
+					int yes = 1;
+					std::cout << "Accepting connection from: " << addr << std::endl;
+
+					if(setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(yes)) == -1)
+						std::cout << "Warning: can't set TCP_NODELAY on incoming connection: " << getSockErrorStr() << std::endl;
 				}
 #ifdef _WIN32
 				else if(socket == -1 && !(WSAGetLastError() == WSAEWOULDBLOCK))
@@ -145,6 +150,7 @@ bool NetGameHost::startListening(const std::string &password, unsigned maxPlayer
 			}
 		});
 
+	setGameName(gameName);
 	return true;
 }
 

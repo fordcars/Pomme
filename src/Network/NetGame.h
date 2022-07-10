@@ -3,10 +3,13 @@
 #include <string>
 #include <iostream>
 
-struct addrinfo;
 struct sockaddr;
+struct sockaddr_storage;
+struct addrinfo;
 namespace Pomme::Network
 {
+	std::ostream &operator<<(std::ostream &lhs, const sockaddr &rhs);
+	std::ostream &operator<<(std::ostream &lhs, const sockaddr_storage &rhs);
 	std::ostream &operator<<(std::ostream &lhs, const addrinfo &rhs);
 
 	class NetGame
@@ -16,7 +19,8 @@ namespace Pomme::Network
 
 	protected:
 		static std::string getSockErrorStr();
-		static unsigned getPortFromAddr(int addrFamily, const sockaddr &addr);
+		void setGameName(const std::string &gameName);
+		std::string getGameName();
 
 	public:
 		NetGame();

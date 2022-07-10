@@ -22,7 +22,8 @@ namespace Pomme::Network
 
 	public:
 		~NetGameHost();
-		bool startListening(const std::string &password, unsigned maxPlayers, int port, bool supportIPv6);
+		bool startListening(const std::string &gameName, const std::string &password,
+			unsigned maxPlayers, int port, bool supportIPv6 = false);
 		bool stopListening();
 	};
 }

@@ -80,7 +80,8 @@ OSStatus NSpGame_Host(
 	NSpFlags                 /*inFlags*/)
 {
 	NetGameHost *hostGame = new NetGameHost();
-	hostGame->startListening(inPassword, inMaxPlayers, inProtocolList->protocol.port, false);
+	hostGame->startListening(inGameName, inPassword, inMaxPlayers, inProtocolList->protocol.port);
+
 	*outGame = new NSpGamePrivate{};
 	(*outGame)->game = hostGame;
 	return 0;
@@ -109,7 +110,10 @@ OSStatus NSpGame_Join(
 	void */*inUserData*/,
 	NSpFlags /*inFlags*/)
 {
+	NetGameJoin *joinGame = new NetGameJoin();
+	joinGame->joinGame(inAddress);
+
 	*outGame = new NSpGamePrivate{};
-	(*outGame)->game = new NetGameJoin();
+	(*outGame)->game = joinGame;
 	return 0;
 }
