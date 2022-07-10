@@ -1,3 +1,5 @@
+#define __STDC_WANT_LIB_EXT1__ // For strcpy_s
+#include <string.h>
 #include "Network/NetGameJoin.h"
 #include "Pomme.h"
 
@@ -14,6 +16,12 @@
 
 #define LOG POMME_GENLOG(POMME_DEBUG_NET, "NET_JOIN")
 using namespace Pomme::Network;
+
+NetGameJoin::NetGameJoin(const NSpPlayerInfo &ourPlayerInfo)
+	: mOurPlayerInfo(ourPlayerInfo)
+{
+	// Do nothing
+}
 
 // Returns valid socket, or -1 on failure
 int NetGameJoin::getConnectionSocket(NSpAddressReference addr)
@@ -59,7 +67,7 @@ int NetGameJoin::getConnectionSocket(NSpAddressReference addr)
 
 		if((sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
 		{
-			LOG << "socket attempt failed: " << getSockErrorStr() << std::endl;
+			LOG << "socket failed: " << getSockErrorStr() << std::endl;
 			continue;
 		}
 
@@ -78,11 +86,22 @@ int NetGameJoin::getConnectionSocket(NSpAddressReference addr)
 	return -1;
 }
 
-// Returns false on failiure
-bool NetGameJoin::joinGame(NSpAddressReference addr)
+// Returns false on failure
+bool NetGameJoin::joinGame(NSpAddressReference addr, const std::string &password,
+	unsigned userDataLen, void *userData)
 {
+	NSpJoinRequestMessage requestMsg {};
 	if((mSock = getConnectionSocket(addr)) == -1)
 		return false;
 
+	// Populate JoinRequestMessage and send
+	requestMsg.header.what   = kNSpJoinRequest;
+	requestMsg.type          = mOurPlayerInfo.type;
+	requestMsg.customDataLen = userDataLen;
+	strcpy_s(requestMsg.name,       sizeof(Str31), mOurPlayerInfo.name);
+	strcpy_s(requestMsg.password,   sizeof(Str31), password.c_str());
+	memcpy_s(requestMsg.customData, sizeof(NSpJoinRequestMessage::customData), userData, userDataLen);
+
+	sendMsg(mSock, requestMsg);
 	return true;
 }

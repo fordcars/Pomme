@@ -13,9 +13,12 @@ namespace Pomme::Network
 	{
 	private:
 		int mSock = -1;
+		NSpPlayerInfo mOurPlayerInfo{};
 		static int getConnectionSocket(NSpAddressReference addr);
 
 	public:
-		bool joinGame(NSpAddressReference addr);
+		NetGameJoin(const NSpPlayerInfo &ourPlayerInfo);
+		bool joinGame(NSpAddressReference addr, const std::string& password,
+			unsigned userDataLen = 0, void *userData = nullptr);
 	};
 }

@@ -74,16 +74,16 @@ OSStatus NSpGame_Host(
 	UInt32                   inMaxPlayers,
 	ConstStr31Param          inGameName,
 	ConstStr31Param          inPassword,
-	ConstStr31Param          /*inPlayerName*/,
+	ConstStr31Param          /*inPlayerName may be NULL, if NULL, no player*/,
 	NSpPlayerType            /*inPlayerType*/,
 	NSpTopology              /*inTopology*/,
 	NSpFlags                 /*inFlags*/)
 {
-	NetGameHost *hostGame = new NetGameHost();
-	hostGame->startListening(inGameName, inPassword, inMaxPlayers, inProtocolList->protocol.port);
+	NetGameHost *netGame = new NetGameHost(inGameName, inPassword, inMaxPlayers);
+	netGame->startListening(inProtocolList->protocol.port);
 
 	*outGame = new NSpGamePrivate{};
-	(*outGame)->game = hostGame;
+	(*outGame)->game = netGame;
 	return 0;
 }
 
@@ -105,15 +105,22 @@ OSStatus NSpGame_Join(
 	NSpAddressReference inAddress,
 	ConstStr31Param inName,
 	ConstStr31Param inPassword,
-	NSpPlayerType /*inType*/,
-	UInt32 /*inUserDataLen*/,
-	void */*inUserData*/,
+	NSpPlayerType inType,
+	UInt32 inUserDataLen,
+	void *inUserData,
 	NSpFlags /*inFlags*/)
 {
-	NetGameJoin *joinGame = new NetGameJoin();
-	joinGame->joinGame(inAddress);
+	// Create our player info
+	NSpPlayerInfo ourPlayerInfo{};
+	ourPlayerInfo.type = inType;
+	strcpy_s(ourPlayerInfo.name, sizeof(Str31), inName);
 
+	// Create NetGame and join game
+	NetGameJoin *netGame = new NetGameJoin(ourPlayerInfo);
+	netGame->joinGame(inAddress, inPassword, inUserDataLen, inUserData);
+
+	// Set GameReference
 	*outGame = new NSpGamePrivate{};
-	(*outGame)->game = joinGame;
+	(*outGame)->game = netGame;
 	return 0;
 }

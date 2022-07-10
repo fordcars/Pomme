@@ -20,6 +20,13 @@
 #define LOG POMME_GENLOG(POMME_DEBUG_NET, "NET_HOST")
 using namespace Pomme::Network;
 
+NetGameHost::NetGameHost(const std::string &gameName, const std::string &password, unsigned maxPlayers)
+	: mPassword(password)
+	, mMaxPlayers(maxPlayers)
+{
+	setGameName(gameName);
+}
+
 NetGameHost::~NetGameHost()
 {
 	// Make sure we stop listening
@@ -60,7 +67,7 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 
 		if((sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1)
 		{
-			LOG << "socket attempt failed: " << getSockErrorStr() << std::endl;
+			LOG << "socket failed: " << getSockErrorStr() << std::endl;
 			continue;
 		}
 
@@ -70,13 +77,7 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 			std::cout << "Warning: can't set SO_REUSEADDR: " << getSockErrorStr() << std::endl;
 		}
 
-		if(bind(sock, p->ai_addr, static_cast<int>(p->ai_addrlen)) == -1)
-		{
-			LOG << "bind attempt failed: " << getSockErrorStr() << std::endl;
-			continue;
-		}
-
-		// Set non-blocking
+		// Set socket as non-blocking
 #ifdef _WIN32
 		u_long iMode = 1;
 		int iResult = ioctlsocket(sock, FIONBIO, &iMode);
@@ -93,6 +94,12 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 		}
 #endif
 
+		if(bind(sock, p->ai_addr, static_cast<int>(p->ai_addrlen)) == -1)
+		{
+			LOG << "bind attempt failed: " << getSockErrorStr() << std::endl;
+			continue;
+		}
+
 		if(listen(sock, ACCEPT_BACKLOG) == -1)
 		{
 			std::cerr << "Can't listen on socket error: " << getSockErrorStr() << std::endl;
@@ -101,7 +108,7 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 
 		// We've got a valid socket!
 		getsockname(sock, &boundAddr, &boundAddrLen);
-		std::cout << "Listening on: " << boundAddr << std::endl;
+		std::cout << "Host listening on: " << boundAddr << std::endl;
 		return sock;
 	}
 
@@ -109,8 +116,44 @@ int NetGameHost::createListeningSocket(int port, bool supportIPv6)
 }
 
 // Returns false on failure
-bool NetGameHost::startListening(const std::string &gameName, const std::string &password,
-	unsigned maxPlayers, int port, bool supportIPv6)
+bool NetGameHost::acceptNewConnection(int sock, const sockaddr_storage& addr)
+{
+	// Set options for incoming socket
+	int yes = 1;
+	if(setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(yes)) == -1)
+		std::cout << "Warning: can't set TCP_NODELAY on incoming socket: " << getSockErrorStr() << std::endl;
+
+	// Make socket blocking (we need this)
+#ifdef _WIN32
+	u_long iMode = 0;
+	int iResult = ioctlsocket(sock, FIONBIO, &iMode);
+	if(iResult != NO_ERROR)
+	{
+		std::cerr << "Can't set incoming socket as blocking, error: " << iResult << std::endl;
+		return false;
+	}
+#else
+	if(fcntl(sock, F_SETFL, fcntl(sock, F_GETFL, 0) & (~O_NONBLOCK)) == -1)
+	{
+		std::cerr << "Can't set incoming socket as blocking, error: " << getSockErrorStr() << std::endl;
+		return false;
+	}
+#endif
+
+	// Perform handshake procedure
+	NSpJoinRequestMessage requestMsg = readMsg<NSpJoinRequestMessage>(sock);
+	if(requestMsg.password != mPassword)
+	{
+		std::cout << "Player '" << requestMsg.name << "' entered wrong password!" << std::endl;
+		return false;
+	}
+	std::cout << "Player '" << requestMsg.name << "' joined from " << addr << std::endl;
+
+	return true;
+}
+
+// Returns false on failure
+bool NetGameHost::startListening(int port, bool supportIPv6)
 {
 	if(mListening)
 		return false;
@@ -130,15 +173,10 @@ bool NetGameHost::startListening(const std::string &gameName, const std::string 
 				sockaddr_storage addr{};
 				socklen_t addrLen = sizeof(addr);
 
+				// listenSock is non-blocking
 				int socket = accept(listenSock, reinterpret_cast<sockaddr *>(&addr), &addrLen);
 				if(socket != -1)
-				{
-					int yes = 1;
-					std::cout << "Accepting connection from: " << addr << std::endl;
-
-					if(setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, (char *)&yes, sizeof(yes)) == -1)
-						std::cout << "Warning: can't set TCP_NODELAY on incoming connection: " << getSockErrorStr() << std::endl;
-				}
+					acceptNewConnection(socket, addr);
 #ifdef _WIN32
 				else if(socket == -1 && !(WSAGetLastError() == WSAEWOULDBLOCK))
 #else
@@ -150,7 +188,6 @@ bool NetGameHost::startListening(const std::string &gameName, const std::string 
 			}
 		});
 
-	setGameName(gameName);
 	return true;
 }
 

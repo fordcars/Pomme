@@ -365,3 +365,24 @@ typedef struct
 	int port;
 
 } NSPAddressPrivate, *NSpAddressReference;
+
+typedef struct NSpMessageHeader
+{
+	UInt32                     version;
+	SInt32                     what;
+	NSpPlayerID                from;
+	NSpPlayerID                to;
+	UInt32                     id;
+	UInt32                     when;
+	UInt32                     messageLen;
+} NSpMessageHeader;
+
+typedef struct NSpJoinRequestMessage
+{
+	NSpMessageHeader           header;
+	Str31                      name;
+	Str31                      password;
+	UInt32                     type;
+	UInt32                     customDataLen;
+	UInt8                      customData[kVariableLengthArray];
+} NSpJoinRequestMessage;

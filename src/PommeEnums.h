@@ -533,3 +533,16 @@ typedef enum
 {
 	kNSpClientServer = 0x00000001
 } NSpTopology;
+
+enum
+{
+	kNSpSystemMessagePrefix = 0x80000000,
+	kNSpError               = kNSpSystemMessagePrefix | 0x7FFFFFFF,
+	kNSpJoinRequest         = kNSpSystemMessagePrefix | 0x00000001,
+	kNSpJoinApproved        = kNSpSystemMessagePrefix | 0x00000002,
+	kNSpJoinDenied          = kNSpSystemMessagePrefix | 0x00000003,
+	kNSpPlayerJoined        = kNSpSystemMessagePrefix | 0x00000004,
+	kNSpPlayerLeft          = kNSpSystemMessagePrefix | 0x00000005,
+	kNSpHostChanged         = kNSpSystemMessagePrefix | 0x00000006,
+	kNSpGameTerminated      = kNSpSystemMessagePrefix | 0x00000007
+};
