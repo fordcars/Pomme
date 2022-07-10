@@ -304,17 +304,7 @@ typedef struct NumVersion
 #endif
 
 //-----------------------------------------------------------------------------
-// Network types
-enum
-{
-	kNSpGameFlag_DontAdvertise = 0x00000001,
-	kNSpGameFlag_ForceTerminateGame = 0x00000002
-};
-
-enum
-{
-	kVariableLengthArray = 1024 // No idea what the actual value should be
-};
+// NetSprocket
 
 typedef int   NSpGameID;
 typedef int   NSpFlags;
@@ -343,11 +333,16 @@ typedef struct
 {
 	int port;
 } NSpProtocolPrivate, *NSpProtocolReference;
+
 typedef struct
 {
 	NSpProtocolPrivate protocol;
 } NSpListPrivate, *NSpProtocolListReference;
 
+enum
+{
+	kVariableLengthArray = 1024 // No idea what the actual value should be
+};
 typedef struct NSpPlayerInfo
 {
 	NSpPlayerID                id;
@@ -364,7 +359,9 @@ typedef struct NSpGroupInfo
 	NSpPlayerID                players[kVariableLengthArray];
 } NSpGroupInfo, *NSpGroupInfoPtr;
 
-typedef enum
+typedef struct
 {
-	kNSpClientServer = 0x00000001
-} NSpTopology;
+	char address[50]; // Enough for IPv4 or IPv6
+	int port;
+
+} NSPAddressPrivate, *NSpAddressReference;

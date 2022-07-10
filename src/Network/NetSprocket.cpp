@@ -1,7 +1,8 @@
 #define __STDC_WANT_LIB_EXT1__ // For strcpy_s
 #include <string.h>
 #include "Pomme.h"
-#include "Network/NetGame.h"
+#include "Network/NetGameHost.h"
+#include "Network/NetGameJoin.h"
 
 using namespace Pomme::Network;
 static UInt32 gStandardMessageSize = 0;
@@ -12,13 +13,6 @@ OSStatus NSpInitialize(UInt32 inStandardMessageSize, UInt32 inBufferSize,
 {
 	gStandardMessageSize = inStandardMessageSize;
 	gBufferSize          = inBufferSize;
-	return 0;
-}
-
-OSStatus NSpGame_Delete(NSpGameReference inGame, NSpFlags /*inFlags*/)
-{
-	delete inGame->game;
-	delete inGame;
 	return 0;
 }
 
@@ -39,10 +33,39 @@ Boolean NSpDoModalHostDialog(NSpProtocolListReference ioProtocolList, Str31 ioGa
 {
 	// These will be set in the dialog
 	ioProtocolList->protocol.port = 2500;
-	strcpy_s(ioGameName, sizeof(Str31), "MyGame");
+	strcpy_s(ioGameName,   sizeof(Str31), "MyGame");
 	strcpy_s(ioPlayerName, sizeof(Str31), "ImTheHost");
-	strcpy_s(ioPassword, sizeof(Str31), "password");
+	strcpy_s(ioPassword,   sizeof(Str31), "password");
 	return true;
+}
+
+NSpAddressReference NSpDoModalJoinDialog(
+	ConstStr31Param /*inGameType*/,
+	ConstStr31Param /*inEntityListLabel*/,
+	Str31 ioName,
+	Str31 ioPassword,
+	NSpEventProcPtr /*inEventProcPtr*/)
+{
+	// These will be set in the dialog
+	NSPAddressPrivate *addr = new NSPAddressPrivate{};
+	strcpy_s(addr->address, sizeof(addr->address), "127.0.0.1");
+	addr->port = 2500;
+
+	strcpy_s(ioName,     sizeof(Str31), "ImJoined");
+	strcpy_s(ioPassword, sizeof(Str31), "password");
+	return addr;
+}
+
+void NSpReleaseAddressReference(NSpAddressReference inAddress)
+{
+	delete inAddress;
+}
+
+OSStatus NSpGame_Delete(NSpGameReference inGame, NSpFlags /*inFlags*/)
+{
+	delete inGame->game;
+	delete inGame;
+	return 0;
 }
 
 OSStatus NSpGame_Host(
@@ -56,15 +79,37 @@ OSStatus NSpGame_Host(
 	NSpTopology              /*inTopology*/,
 	NSpFlags                 /*inFlags*/)
 {
+	NetGameHost *hostGame = new NetGameHost();
+	hostGame->startListening(inPassword, inMaxPlayers, inProtocolList->protocol.port, false);
 	*outGame = new NSpGamePrivate{};
-	(*outGame)->game = new NetGame(inGameName);
-	(*outGame)->game->startListening(inPassword, inMaxPlayers, inProtocolList->protocol.port, false);
+	(*outGame)->game = hostGame;
 	return 0;
 }
 
 OSStatus NSpGame_EnableAdvertising(NSpGameReference inGame, NSpProtocolReference /*inProtocol*/, Boolean inEnable)
 {
 	if(!inEnable)
-		inGame->game->stopListening();
+	{
+		NetGameHost *hostGame = dynamic_cast<NetGameHost *>(inGame->game);
+		if(hostGame == nullptr)
+			return kNSpInvalidGameRefErr;
+
+		hostGame->stopListening();
+	}
+	return 0;
+}
+
+OSStatus NSpGame_Join(
+	NSpGameReference *outGame,
+	NSpAddressReference inAddress,
+	ConstStr31Param inName,
+	ConstStr31Param inPassword,
+	NSpPlayerType /*inType*/,
+	UInt32 /*inUserDataLen*/,
+	void */*inUserData*/,
+	NSpFlags /*inFlags*/)
+{
+	*outGame = new NSpGamePrivate{};
+	(*outGame)->game = new NetGameJoin();
 	return 0;
 }

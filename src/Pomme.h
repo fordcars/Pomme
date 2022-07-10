@@ -496,17 +496,10 @@ Boolean Pomme_DecompressSoundResource(SndListHandle* sndHandlePtr, long* offsetT
 SndListHandle Pomme_SndLoadFileAsResource(short fRefNum);
 
 //-----------------------------------------------------------------------------
-// Network
+// NetSprockets
+
 OSStatus NSpInitialize(UInt32 inStandardMessageSize, UInt32 inBufferSize,
 	UInt32 inQElements, NSpGameID inGameID, UInt32 inTimeout);
-
-OSStatus NSpGame_Delete(NSpGameReference inGame, NSpFlags inFlags);
-
-// Alias
-static inline OSStatus NSpGame_Dispose(NSpGameReference inGame, NSpFlags inFlags)
-{
-	return NSpGame_Delete(inGame, inFlags);
-}
 
 OSStatus NSpProtocolList_Create(NSpProtocolReference inProtocolRef, NSpProtocolListReference *outList);
 
@@ -520,6 +513,23 @@ void NSpProtocolList_Delete(NSpProtocolListReference inProtocolList);
 
 Boolean NSpDoModalHostDialog(NSpProtocolListReference ioProtocolList, Str31 ioGameName,
 	Str31 ioPlayerName, Str31 ioPassword, NSpEventProcPtr inEventProcPtr);
+
+NSpAddressReference NSpDoModalJoinDialog(
+	ConstStr31Param inGameType,
+	ConstStr31Param inEntityListLabel,
+	Str31 ioName,
+	Str31 ioPassword,
+	NSpEventProcPtr inEventProcPtr);
+
+void NSpReleaseAddressReference(NSpAddressReference inAddress);
+
+OSStatus NSpGame_Delete(NSpGameReference inGame, NSpFlags inFlags);
+
+// Alias
+static inline OSStatus NSpGame_Dispose(NSpGameReference inGame, NSpFlags inFlags)
+{
+	return NSpGame_Delete(inGame, inFlags);
+}
 
 OSStatus NSpGame_Host(
 	NSpGameReference *outGame,
@@ -535,6 +545,15 @@ OSStatus NSpGame_Host(
 
 OSStatus NSpGame_EnableAdvertising( NSpGameReference inGame, NSpProtocolReference inProtocol, Boolean inEnable);
 
+OSStatus NSpGame_Join(
+	NSpGameReference *outGame,
+	NSpAddressReference inAddress,
+	ConstStr31Param inName,
+	ConstStr31Param inPassword,
+	NSpPlayerType inType,
+	UInt32 inUserDataLen,
+	void *inUserData,
+	NSpFlags inFlags);
 
 #ifdef __cplusplus
 }

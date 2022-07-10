@@ -117,6 +117,10 @@ if (NOT(POMME_NO_NETWORK))
 		${POMME_SRCDIR}/Network/NetSprocket.cpp
 		${POMME_SRCDIR}/Network/NetGame.cpp
 		${POMME_SRCDIR}/Network/NetGame.h
+		${POMME_SRCDIR}/Network/NetGameHost.cpp
+		${POMME_SRCDIR}/Network/NetGameHost.h
+		${POMME_SRCDIR}/Network/NetGameJoin.cpp
+		${POMME_SRCDIR}/Network/NetGameJoin.h
 	)
 else()
 	add_compile_definitions(POMME_NO_NETWORK)

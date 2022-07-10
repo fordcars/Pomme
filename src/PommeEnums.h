@@ -157,6 +157,47 @@ enum EErrors
     channelBusy             = -209,
     buffersTooSmall         = -210,
     siInvalidCompression    = -223,
+
+	// NetSprocket error codes
+	kNSpInitializationFailedErr = -30360,
+	kNSpAlreadyInitializedErr   = -30361,
+	kNSpTopologyNotSupportedErr = -30362,
+	kNSpMessageSizeTooBigErr    = -30363,
+	kNSpBufferTooSmallErr       = -30364,
+	kNSpReceiveDataErr          = -30365,
+	kNSpProtocolNotAvailableErr = -30366,
+	kNSpInvalidGameRefErr       = -30367,
+	kNSpInvalidNetMessageErr    = -30368,
+	kNSpInvalidParameterErr     = -30369,
+	kNSpOTNotPresentErr         = -30370,
+	kNSpHostFailedErr           = -30371,
+	kNSpNotHostAddressErr       = -30372,
+	kNSpMemAllocationErr        = -30373,
+	kNSpAlreadyAdvertisingErr   = -30374,
+	kNSpNoTypeSpecifiedErr      = -30375,
+	kNSpNotAdvertisingErr       = -30376,
+	kNSpInvalidAddressErr       = -30377,
+	kNSpFreeQExhaustedErr       = -30378,
+	kNSpRemovePlayerFailedErr   = -30379,
+	kNSpAddressInUseErr         = -30380,
+	NSpFeatureNotImplementedErr = -30381,
+	NSpNameRequiredErr          = -30382,
+	NSpInvalidPlayerIDErr       = -30383,
+	NSpInvalidGroupIDErr        = -30384,
+	NSpNoPlayersErr             = -30385,
+	NSpNoGroupsErr              = -30386,
+	NSpNoHostVolunteersErr      = -30387,
+	kNSpCreateGroupFailedErr    = -30388,
+	NSpAddPlayerFailedErr       = -30389,
+	NSpInvalidDefinitionErr     = -30390,
+	NSpInvalidProtocolRefErr    = -30391,
+	NSpInvalidProtocolListErr   = -30392,
+	kNSpTimeoutErr              = -30393,
+	kNSpGameTerminatedErr       = -30394,
+	kNSpConnectFailedErr        = -30395,
+	kNSpSendFailedErr           = -30396,
+	kNSpPortTakenErr            = -30397,
+	kNSpNotPlayingErr           = -30398
 };
 
 
@@ -478,3 +519,17 @@ enum
 	pmInhibitG8							= 0x1000,
 	pmInhibitC8							= 0x2000,
 };
+
+//-----------------------------------------------------------------------------
+// NetSprocket
+
+enum
+{
+	kNSpGameFlag_DontAdvertise = 0x00000001,
+	kNSpGameFlag_ForceTerminateGame = 0x00000002
+};
+
+typedef enum
+{
+	kNSpClientServer = 0x00000001
+} NSpTopology;
