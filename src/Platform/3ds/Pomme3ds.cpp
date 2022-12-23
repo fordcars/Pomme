@@ -1,4 +1,5 @@
 #include <3ds.h>
+#include "GL/picaGL.h"
 #include <string>
 #include "Platform/3ds/Pomme3ds.h"
 
@@ -55,6 +56,7 @@ static void InitGFX()
    gfxInitDefault();
    consoleInit(GFX_BOTTOM, consoleGetDefault());
    consoleDebugInit(debugDevice_CONSOLE);
+   pglInit();
 }
 
 static void InitFS()
@@ -67,14 +69,25 @@ static void InitFS()
    }
 }
 
-void Pomme::Platform::N3DS::Init()
+void Init3ds()
 {
     InitGFX();
     //InitFS();
 }
 
-void Pomme::Platform::N3DS::Shutdown()
+void Shutdown3ds()
 {
    //romfsExit();
    gfxExit();
+   pglExit();
+}
+
+void WaitForVBlank3ds()
+{
+    gspWaitForVBlank();
+}
+
+void SwapBuffers3ds()
+{
+    pglSwapBuffers();
 }

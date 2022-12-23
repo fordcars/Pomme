@@ -54,7 +54,7 @@ void FlushEvents(short, short)
 void Pomme::Init()
 {
 #ifdef __3DS__
-	Pomme::Platform::N3DS::Init();
+	Init3ds();
 #endif
 
 	Pomme::Files::Init();

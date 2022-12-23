@@ -36,13 +36,13 @@ CXXFLAGS	:= $(CFLAGS) -fexceptions -std=gnu++2a
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH)
 
-LIBS	:= -lSDL2
+LIBS	:= -lSDL2 -lpicaGL
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:=	$(CTRULIB) $(CURDIR)/extern/SDL-3DS
+LIBDIRS	:=	$(CTRULIB) $(CURDIR)/extern/SDL-3DS $(CURDIR)/extern/picaGL
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional

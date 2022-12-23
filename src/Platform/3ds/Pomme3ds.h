@@ -1,7 +1,14 @@
 #pragma once
 
-namespace Pomme::Platform::N3DS
-{
-	void Init();
-	void Shutdown();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void Init3ds();
+void Shutdown3ds();
+void WaitForVBlank3ds();
+void SwapBuffers3ds();
+
+#ifdef __cplusplus
 }
+#endif
