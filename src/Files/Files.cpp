@@ -190,6 +190,8 @@ OSErr FindFolder(short vRefNum, OSType folderType, Boolean createFolder, short* 
 			return fnfErr;
 		}
 		path = fs::path(home) / "Library" / "Preferences";
+#elif __3DS__
+		path = "";
 #else
 		const char* home = getenv("XDG_CONFIG_HOME");
 		if (home)
