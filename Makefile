@@ -17,7 +17,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	Pomme
 BUILD		:=	build
-SOURCES		:=	src src/CompilerSupport src/Files src/Graphics src/Input src/Memory src/Platform src/QD3D src/SoundFormats src/SoundMixer src/Text src/Time src/Utilities src/Video
+SOURCES		:=	src src/CompilerSupport src/Files src/Graphics src/Input src/Memory src/Platform/3ds src/QD3D src/SoundFormats src/SoundMixer src/Text src/Time src/Utilities src/Video
 DATA		:=	data
 INCLUDES	:=	src include
 

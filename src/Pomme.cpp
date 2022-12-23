@@ -12,6 +12,10 @@
 	#include "Platform/Windows/PommeWindows.h"
 #endif
 
+#ifdef __3DS__
+#include "Platform/3ds/Pomme3ds.h"
+#endif
+
 //-----------------------------------------------------------------------------
 // Our own utils
 
@@ -49,6 +53,10 @@ void FlushEvents(short, short)
 
 void Pomme::Init()
 {
+#ifdef __3DS__
+	Pomme::Platform::N3DS::Init();
+#endif
+
 	Pomme::Files::Init();
 
 #ifndef POMME_NO_GRAPHICS
