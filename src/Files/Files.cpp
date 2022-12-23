@@ -31,6 +31,17 @@ static std::vector<std::unique_ptr<Volume>> volumes;
 //-----------------------------------------------------------------------------
 // Utilities
 
+#ifdef __3DS__
+// Define this for 3DS; workaround for toolchain bug
+// Inspired by: https://github.com/purduesigbots/pros/pull/201
+extern "C" {
+	long pathconf(const char* path, int name) {
+		errno = ENOSYS;
+		return -1;
+	}
+}
+#endif
+
 bool Pomme::Files::IsRefNumLegal(short refNum)
 {
 	return openFiles.IsAllocated(refNum);

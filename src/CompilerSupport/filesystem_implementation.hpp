@@ -67,6 +67,8 @@
 #elif defined(__EMSCRIPTEN__)
 #define GHC_OS_WEB
 #include <wasi/api.h>
+#elif defined(__3DS__)
+#define GHC_OS_LINUX
 #else
 #error "Operating system currently not supported!"
 #endif
