@@ -53,7 +53,7 @@ static std::string GetResultSummary(int summaryCode)
 
 static void InitGFX()
 {
-   gfxInitDefault();
+   gfxInit(GSP_RGBA8_OES,GSP_RGB565_OES,false); 
    consoleInit(GFX_BOTTOM, consoleGetDefault());
    consoleDebugInit(debugDevice_CONSOLE);
    pglInit();
