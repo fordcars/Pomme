@@ -51,7 +51,9 @@ using namespace cmixer;
 
 static struct Mixer
 {
+#ifndef __3DS__
 	SDL_mutex* sdlAudioMutex;
+#endif
 
 	std::list<Source*> sources;   // Linked list of active (playing) sources
 	int32_t pcmmixbuf[BUFFER_SIZE]; // Internal master buffer
@@ -73,10 +75,13 @@ static struct Mixer
 // Global init/shutdown
 
 static bool sdlAudioSubSystemInited = false;
+#ifndef __3DS__
 static SDL_AudioDeviceID sdlDeviceID = 0;
+#endif
 
 void cmixer::InitWithSDL()
 {
+#ifndef __3DS__
 	if (sdlAudioSubSystemInited)
 		throw std::runtime_error("SDL audio subsystem already inited");
 
@@ -108,10 +113,12 @@ void cmixer::InitWithSDL()
 
 	// Start audio
 	SDL_PauseAudioDevice(sdlDeviceID, 0);
+#endif
 }
 
 void cmixer::ShutdownWithSDL()
 {
+#ifndef __3DS__
 	if (sdlDeviceID)
 	{
 		SDL_CloseAudioDevice(sdlDeviceID);
@@ -127,6 +134,7 @@ void cmixer::ShutdownWithSDL()
 		SDL_QuitSubSystem(SDL_INIT_AUDIO);
 		sdlAudioSubSystemInited = false;
 	}
+#endif
 }
 
 double cmixer::GetMasterGain()
@@ -144,17 +152,23 @@ void cmixer::SetMasterGain(double newGain)
 
 void Mixer::Lock()
 {
+#ifndef __3DS__
 	SDL_LockMutex(sdlAudioMutex);
+#endif
 }
 
 void Mixer::Unlock()
 {
+#ifndef __3DS__
 	SDL_UnlockMutex(sdlAudioMutex);
+#endif
 }
 
 void Mixer::Init(int newSamplerate)
 {
+#ifndef __3DS__
 	sdlAudioMutex = SDL_CreateMutex();
+#endif
 
 	samplerate = newSamplerate;
 	gain = FX_UNIT;
