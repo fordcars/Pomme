@@ -84,10 +84,10 @@ void Shutdown3ds()
 
 void WaitForVBlank3ds()
 {
-    gspWaitForVBlank();
+   gspWaitForVBlank();
 }
 
 void SwapBuffers3ds()
 {
-    pglSwapBuffers();
+   pglSwapBuffers();
 }
