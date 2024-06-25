@@ -29,7 +29,7 @@ CFLAGS	:=	-O2 -Wall -Wno-multichar -mword-relocations \
 			-ffunction-sections -fdata-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ `sdl-config --cflags` -DPOMME_NO_SOUND_MIXER
+CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ `sdl-config --cflags`
 
 CXXFLAGS	:= $(CFLAGS) -fexceptions -std=gnu++2a
 
