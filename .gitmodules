@@ -1,6 +1,3 @@
-[submodule "extern/SDL-3DS"]
-	path = extern/SDL-3DS
-	url = https://github.com/fordcars/SDL-3DS
 [submodule "extern/picaGL"]
 	path = extern/picaGL
 	url = https://github.com/masterfeizz/picaGL
