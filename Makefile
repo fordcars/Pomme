@@ -17,7 +17,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	Pomme
 BUILD		:=	build
-SOURCES		:=	src src/CompilerSupport src/Files src/Graphics src/Input src/Memory src/Platform/3ds src/QD3D src/SoundFormats src/SoundMixer src/Text src/Time src/Utilities src/Video
+SOURCES		:=	src src/CompilerSupport src/Files src/Graphics src/Input src/Memory src/Platform/3ds src/QD3D src/SoundFormats src/Text src/Time src/Utilities src/Video
 INCLUDES	:=	src include
 
 #---------------------------------------------------------------------------------
@@ -29,14 +29,14 @@ CFLAGS	:=	-O2 -Wall -Wno-multichar -mword-relocations \
 			-ffunction-sections -fdata-sections \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -D__3DS__ -DPOMME_NO_SOUND_MIXER
+CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ `sdl-config --cflags` -DPOMME_NO_SOUND_MIXER
 
 CXXFLAGS	:= $(CFLAGS) -fexceptions -std=gnu++2a
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH)
 
-LIBS	:= -lSDL2 -lpicaGL
+LIBS	:= `$(PREFIX)pkg-config sdl --libs` -lpicaGL
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

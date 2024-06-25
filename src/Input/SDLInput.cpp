@@ -18,6 +18,7 @@ static void InitScancodeLookupTable()
 
 	memset(scancodeLookupTable, NO_MAC_VK, sizeof(scancodeLookupTable));
 	char* T = scancodeLookupTable;
+#ifndef __3DS__
 
 	T[0]						= NO_MAC_VK;				// 0
 	T[1]						= NO_MAC_VK;
@@ -147,6 +148,7 @@ static void InitScancodeLookupTable()
 	T[SDL_SCANCODE_RSHIFT]		= kVK_RightShift;
 	T[SDL_SCANCODE_RALT]		= kVK_RightOption;
 	T[SDL_SCANCODE_RGUI]		= kVK_Command; // no right command I guess
+#endif
 }
 
 void GetKeys(KeyMap km)
@@ -158,6 +160,7 @@ void GetKeys(KeyMap km)
 
 	SDL_PumpEvents();
 	int numkeys = 0;
+#ifndef __3DS__
 	const UInt8* keystate = SDL_GetKeyboardState(&numkeys);
 
 	numkeys = std::min((int) sizeof(scancodeLookupTable), numkeys);
@@ -173,6 +176,7 @@ void GetKeys(KeyMap km)
 		int bitNo = vk & 31;
 		km[byteNo] |= 1 << bitNo;
 	}
+#endif
 
 #if POMME_DEBUG_INPUT
 	if (km[0] || km[1] || km[2] || km[3])
