@@ -98,7 +98,11 @@ CGrafPtr Pomme::Graphics::GetScreenPort(void)
 
 void Pomme::Graphics::Init()
 {
+#ifndef __3DS__
 	Rect boundsRect = {0, 0, 480, 640};
+#elif defined __3DS__
+Rect boundsRect = {0, 0, 800, 240};
+#endif
 	screenPort = std::make_unique<GrafPortImpl>(boundsRect);
 	curPort = screenPort.get();
 }

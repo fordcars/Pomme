@@ -26,23 +26,23 @@ INCLUDES	:=	src include
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 CFLAGS	:=	-O2 -Wall -Wno-multichar -mword-relocations \
-			-ffunction-sections -fdata-sections \
+			-ffunction-sections -fdata-sections -I/opt/devkitpro/portlibs/3ds/include/SDL \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ `sdl-config --cflags`
+CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ -DPOMME_NO_INPUT `sdl-config --cflags`
 
 CXXFLAGS	:= $(CFLAGS) -fexceptions -std=gnu++2a
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH)
 
-LIBS	:= `$(PREFIX)pkg-config sdl --libs` -lpicaGL
+LIBS	:= -lSDL  -lctru -lm -lpicaGL
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
 # include and lib
 #---------------------------------------------------------------------------------
-LIBDIRS	:=	$(CTRULIB) $(CURDIR)/extern/SDL-3DS $(CURDIR)/extern/picaGL
+LIBDIRS	:=	$(CTRULIB) $(PORTLIBS) $(CURDIR)/extern/picaGL
 
 #---------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
