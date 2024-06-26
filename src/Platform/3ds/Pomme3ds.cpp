@@ -72,12 +72,12 @@ static void InitFS()
 void Init3ds()
 {
     InitGFX();
-    //InitFS();
+    InitFS();
 }
 
 void Shutdown3ds()
 {
-   //romfsExit();
+   romfsExit();
    gfxExit();
    pglExit();
 }
