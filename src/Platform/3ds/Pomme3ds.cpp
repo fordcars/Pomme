@@ -1,7 +1,14 @@
 #include <3ds.h>
 #include "GL/picaGL.h"
 #include <string>
+#include <limits>
 #include "Platform/3ds/Pomme3ds.h"
+
+static unsigned g3dsNewlyDownButtons = 0;
+static unsigned g3dsNewlyUpButtons = 0;
+static unsigned g3dsHeldButtons = 0;
+static float g3dsCPadX = 0.0f;
+static float g3dsCPadY = 0.0f;
 
 static std::string GetResultSummary(int summaryCode)
 {
@@ -82,6 +89,11 @@ void Shutdown3ds()
    pglExit();
 }
 
+bool ShouldDoMainLoop3ds()
+{
+   return aptMainLoop();
+}
+
 void WaitForVBlank3ds()
 {
    gspWaitForVBlank();
@@ -90,4 +102,44 @@ void WaitForVBlank3ds()
 void SwapBuffers3ds()
 {
    pglSwapBuffers();
+}
+
+void ScanInput3ds()
+{
+   hidScanInput();
+   g3dsNewlyDownButtons = hidKeysDown();
+   g3dsNewlyUpButtons = hidKeysUp();
+   g3dsHeldButtons = hidKeysHeld();
+
+   circlePosition pos;
+   hidCircleRead(&pos);
+
+   float range = std::numeric_limits<int16_t>::max() + 1.0f;
+   g3dsCPadX = static_cast<float>(pos.dx) / range;
+   g3dsCPadY = static_cast<float>(pos.dy) / range;
+}
+
+float Get3dsCPadX()
+{
+   return g3dsCPadX;
+}
+
+float Get3dsCPadY()
+{
+   return g3dsCPadY;
+}
+
+unsigned GetNewlyDownButtons3ds()
+{
+   return g3dsNewlyDownButtons;
+}
+
+unsigned GetNewlyUpButtons3ds()
+{
+   return g3dsNewlyUpButtons;
+}
+
+unsigned GetHeldButtons3ds()
+{
+   return g3dsHeldButtons;
 }
