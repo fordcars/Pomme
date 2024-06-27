@@ -114,7 +114,8 @@ void ScanInput3ds()
    circlePosition pos;
    hidCircleRead(&pos);
 
-   float range = std::numeric_limits<int16_t>::max() + 1.0f;
+   // CARL TODO: confirm this value on real hardware
+   float range = 154;//std::numeric_limits<int16_t>::max() + 1.0f;
    g3dsCPadX = static_cast<float>(pos.dx) / range;
    g3dsCPadY = static_cast<float>(pos.dy) / range;
 }
