@@ -29,7 +29,7 @@ CFLAGS	:=	-O2 -Wall -Wno-multichar -mword-relocations \
 			-ffunction-sections -fdata-sections -I/opt/devkitpro/portlibs/3ds/include/SDL \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ -DPOMME_NO_INPUT `sdl-config --cflags`
+CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ -DPOMME_NO_INPUT -DPOMME_NO_SOUND_MIXER `sdl-config --cflags`
 
 CXXFLAGS	:= $(CFLAGS) -fexceptions -std=gnu++2a
 

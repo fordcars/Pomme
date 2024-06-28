@@ -38,26 +38,31 @@ static inline ChannelImpl& GetChannelImpl(SndChannelPtr chan)
 
 OSErr GetDefaultOutputVolume(long* stereoLevel)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	unsigned short g = (unsigned short) (cmixer::GetMasterGain() * 256.0);
 	*stereoLevel = (g << 16) | g;
+#endif
 	return noErr;
 }
 
 // See IM:S:2-139, "Controlling Volume Levels".
 OSErr SetDefaultOutputVolume(long stereoLevel)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	unsigned short left  = 0xFFFF & stereoLevel;
 	unsigned short right = 0xFFFF & (stereoLevel >> 16);
 	if (right != left)
 		TODOMINOR2("setting different volumes for left & right is not implemented");
 	LOG << left / 256.0 << "\n";
 	cmixer::SetMasterGain(left / 256.0);
+#endif
 	return noErr;
 }
 
 // IM:S:2-127
 OSErr SndNewChannel(SndChannelPtr* macChanPtr, short synth, long init, SndCallBackProcPtr userRoutine)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	if (synth != sampledSynth)
 	{
 		TODO2("unimplemented synth type " << sampledSynth);
@@ -89,6 +94,7 @@ OSErr SndNewChannel(SndChannelPtr* macChanPtr, short synth, long init, SndCallBa
 
 	LOG << "New channel created, init = $" << std::hex << init << std::dec
 		<< ", total managed channels = " << Pomme::Sound::gNumManagedChans << "\n";
+#endif
 
 	return noErr;
 }
@@ -96,16 +102,19 @@ OSErr SndNewChannel(SndChannelPtr* macChanPtr, short synth, long init, SndCallBa
 // IM:S:2-129
 OSErr SndDisposeChannel(SndChannelPtr macChanPtr, Boolean quietNow)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	if (!quietNow)
 	{
 		TODO2("SndDisposeChannel: quietNow == false is not implemented");
 	}
 	delete &GetChannelImpl(macChanPtr);
+#endif
 	return noErr;
 }
 
 OSErr SndChannelStatus(SndChannelPtr chan, short theLength, SCStatusPtr theStatus)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	// Must have room to write an entire SCStatus struct
 	if ((size_t) theLength < sizeof(SCStatus))
 	{
@@ -120,6 +129,7 @@ OSErr SndChannelStatus(SndChannelPtr chan, short theLength, SCStatusPtr theStatu
 
 	theStatus->scChannelPaused = state == cmixer::CM_STATE_PAUSED;
 	theStatus->scChannelBusy   = state != cmixer::CM_STATE_STOPPED;
+#endif
 
 	return noErr;
 }
@@ -127,6 +137,7 @@ OSErr SndChannelStatus(SndChannelPtr chan, short theLength, SCStatusPtr theStatu
 // Install a sampled sound as a voice in a channel.
 static void InstallSoundInChannel(SndChannelPtr chan, const Ptr sampledSoundHeader, bool forceCopy=false)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	//---------------------------------
 	// Get internal channel
 
@@ -202,10 +213,12 @@ static void InstallSoundInChannel(SndChannelPtr chan, const Ptr sampledSoundHead
 
 	// Get it going!
 	impl.source.Play();
+#endif
 }
 
 OSErr SndDoImmediate(SndChannelPtr chan, const SndCommand* cmd)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	auto& impl = GetChannelImpl(chan);
 
 	// Discard the high bit of the command (it indicates whether an 'snd ' resource has associated data).
@@ -299,6 +312,7 @@ OSErr SndDoImmediate(SndChannelPtr chan, const SndCommand* cmd)
 	default:
 		TODOMINOR2(cmd->cmd << "(" << cmd->param1 << "," << cmd->param2 << ")");
 	}
+#endif
 
 	return noErr;
 }
@@ -306,10 +320,12 @@ OSErr SndDoImmediate(SndChannelPtr chan, const SndCommand* cmd)
 // Not implemented yet, but you can probably use SndDoImmediateInstead.
 OSErr SndDoCommand(SndChannelPtr chan, const SndCommand* cmd, Boolean noWait)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	(void) chan;
 	(void) cmd;
 	(void) noWait;
 	TODOMINOR2("SndDoCommand isn't implemented yet, but you can probably use SndDoImmediate instead.");
+#endif
 	return noErr;
 }
 
@@ -323,6 +339,7 @@ OSErr SndStartFilePlay(
 	FilePlayCompletionUPP				theCompletion,
 	Boolean								async)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	(void) bufferSize;
 	(void) theBuffer;
 
@@ -375,23 +392,28 @@ OSErr SndStartFilePlay(
 		impl.Recycle();
 		return noErr;
 	}
+#endif
 
 	return noErr;
 }
 
 OSErr SndPauseFilePlay(SndChannelPtr chan)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	// TODO: check that chan is being used for play from disk
 	GetChannelImpl(chan).source.TogglePause();
+#endif
 	return noErr;
 }
 
 OSErr SndStopFilePlay(SndChannelPtr chan, Boolean quietNow)
 {
+#ifndef POMME_NO_SOUND_MIXER
 	// TODO: check that chan is being used for play from disk
 	if (!quietNow)
 		TODO2("quietNow==false not supported yet, sound will be cut off immediately instead");
 	GetChannelImpl(chan).source.Stop();
+#endif
 	return noErr;
 }
 
