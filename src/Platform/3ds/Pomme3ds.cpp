@@ -111,11 +111,11 @@ void ScanInput3ds()
    g3dsNewlyUpButtons = hidKeysUp();
    g3dsHeldButtons = hidKeysHeld();
 
+   // Returns values from around [-155, 155] for each axist.
    circlePosition pos;
    hidCircleRead(&pos);
 
-   // CARL TODO: confirm this value on real hardware
-   float range = 154;//std::numeric_limits<int16_t>::max() + 1.0f;
+   float range = 155;
    g3dsCPadX = static_cast<float>(pos.dx) / range;
    g3dsCPadY = static_cast<float>(pos.dy) / range;
 }
