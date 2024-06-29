@@ -51,7 +51,7 @@ using namespace cmixer;
 
 static struct Mixer
 {
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 	SDL_mutex* sdlAudioMutex;
 #endif
 
@@ -75,13 +75,13 @@ static struct Mixer
 // Global init/shutdown
 
 static bool sdlAudioSubSystemInited = false;
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 static SDL_AudioDeviceID sdlDeviceID = 0;
 #endif
 
 void cmixer::InitWithSDL()
 {
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 	if (sdlAudioSubSystemInited)
 		throw std::runtime_error("SDL audio subsystem already inited");
 
@@ -118,7 +118,7 @@ void cmixer::InitWithSDL()
 
 void cmixer::ShutdownWithSDL()
 {
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 	if (sdlDeviceID)
 	{
 		SDL_CloseAudioDevice(sdlDeviceID);
@@ -152,21 +152,21 @@ void cmixer::SetMasterGain(double newGain)
 
 void Mixer::Lock()
 {
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 	SDL_LockMutex(sdlAudioMutex);
 #endif
 }
 
 void Mixer::Unlock()
 {
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 	SDL_UnlockMutex(sdlAudioMutex);
 #endif
 }
 
 void Mixer::Init(int newSamplerate)
 {
-#ifndef __3DS__
+#ifndef POMME_NO_SOUND_MIXER
 	sdlAudioMutex = SDL_CreateMutex();
 #endif
 
