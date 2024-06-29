@@ -17,7 +17,8 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	Pomme
 BUILD		:=	build
-SOURCES		:=	src src/CompilerSupport src/Files src/Graphics src/Input src/Memory src/Platform/3ds src/QD3D src/SoundFormats src/SoundMixer src/Text src/Time src/Utilities src/Video
+SOURCES		:=	src src/CompilerSupport src/Files src/Graphics src/Input src/Memory \
+			src/Platform/3ds src/QD3D src/SoundFormats src/SoundMixer src/Text src/Time src/Utilities src/Video
 INCLUDES	:=	src include
 
 #---------------------------------------------------------------------------------
@@ -26,17 +27,17 @@ INCLUDES	:=	src include
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 CFLAGS	:=	-O2 -Wall -Wno-multichar -mword-relocations \
-			-ffunction-sections -fdata-sections -I/opt/devkitpro/portlibs/3ds/include/SDL \
+			-ffunction-sections -fdata-sections -I/opt/devkitpro/portlibs/3ds/include/SDL2 \
 			$(ARCH)
 
-CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ -DPOMME_NO_INPUT -DPOMME_NO_SOUND_MIXER `sdl-config --cflags`
+CFLAGS	+=	$(INCLUDE) -D_3DS -D__3DS__ -DPOMME_NO_INPUT -DPOMME_NO_SOUND_MIXER
 
 CXXFLAGS	:= $(CFLAGS) -fexceptions -std=gnu++2a
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH)
 
-LIBS	:= -lSDL  -lctru -lm -lpicaGL
+LIBS	:= -lSDL2 -lctru -lm -lpicaGL
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing

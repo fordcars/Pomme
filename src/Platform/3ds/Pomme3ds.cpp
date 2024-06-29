@@ -78,8 +78,8 @@ static void InitFS()
 
 void Init3ds()
 {
-    InitGFX();
-    InitFS();
+   InitGFX();
+   InitFS();
 }
 
 void Shutdown3ds()
