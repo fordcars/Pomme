@@ -81,4 +81,8 @@ void Pomme::Shutdown()
 #ifndef POMME_NO_SOUND_MIXER
 	Pomme::Sound::ShutdownMixer();
 #endif
+
+#ifdef __3DS__
+	Shutdown3ds();
+#endif
 }

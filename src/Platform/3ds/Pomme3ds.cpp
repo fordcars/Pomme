@@ -1,7 +1,11 @@
+#include <SDL.h>
 #include <3ds.h>
+
 #include "GL/picaGL.h"
 #include <string>
 #include <limits>
+
+#include "PommeInit.h"
 #include "Platform/3ds/Pomme3ds.h"
 
 static unsigned g3dsNewlyDownButtons = 0;
@@ -9,6 +13,10 @@ static unsigned g3dsNewlyUpButtons = 0;
 static unsigned g3dsHeldButtons = 0;
 static float g3dsCPadX = 0.0f;
 static float g3dsCPadY = 0.0f;
+
+#ifdef ENABLE_USAGE_VISUALIZER_3DS
+#include "UsageVisualizer3ds.h"
+#endif
 
 static std::string GetResultSummary(int summaryCode)
 {
@@ -91,7 +99,14 @@ void Shutdown3ds()
 
 bool ShouldDoMainLoop3ds()
 {
-   return aptMainLoop();
+   if(!aptMainLoop())
+   {
+      Pomme::Shutdown();
+      SDL_Quit();
+      exit(0);
+      return false;
+   }
+   return true;
 }
 
 void WaitForVBlank3ds()
@@ -102,6 +117,9 @@ void WaitForVBlank3ds()
 void SwapBuffers3ds()
 {
    pglSwapBuffers();
+#ifdef ENABLE_USAGE_VISUALIZER_3DS
+   UsageVisualizer3ds::update();
+#endif
 }
 
 void ScanInput3ds()
