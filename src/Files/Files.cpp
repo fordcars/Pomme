@@ -193,7 +193,7 @@ OSErr FindFolder(short vRefNum, OSType folderType, Boolean createFolder, short* 
 			return fnfErr;
 		}
 		path = fs::path(home) / "Library" / "Preferences";
-#elif __3DS__
+#elif defined __3DS__
 		path = "";
 #else
 		const char* home = getenv("XDG_CONFIG_HOME");
@@ -219,10 +219,12 @@ OSErr FindFolder(short vRefNum, OSType folderType, Boolean createFolder, short* 
 		return fnfErr;
 	}
 
+#ifndef __3DS__
 	if (path.empty())
 	{
 		return fnfErr;
 	}
+#endif
 
 	path = path.lexically_normal();
 
