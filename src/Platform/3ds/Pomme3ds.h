@@ -45,7 +45,9 @@ float Get3dsCPadY(); // [-1, 1]
 unsigned GetNewlyDownButtons3ds();
 unsigned GetNewlyUpButtons3ds();
 unsigned GetHeldButtons3ds();
+
 void SelectTopScreen3ds(bool topScreen);
+bool IsTopScreenSelected3ds();
 
 #ifdef __cplusplus
 }

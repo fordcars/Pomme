@@ -18,6 +18,8 @@ constexpr unsigned UPPER_SCREEN_WIDTH = 400;
 constexpr unsigned LOWER_SCREEN_WIDTH = 320;
 constexpr unsigned SCREEN_HEIGHT = 240;
 
+static bool gIsTopScreenCurrent = true;
+
 #ifdef ENABLE_USAGE_VISUALIZER_3DS
 #include "UsageVisualizer3ds.h"
 #endif
@@ -174,10 +176,17 @@ void SelectTopScreen3ds(bool topScreen)
    {
       pglSelectScreen(GFX_TOP, GFX_LEFT);
       glViewport(0, 0, UPPER_SCREEN_WIDTH, SCREEN_HEIGHT);
+      gIsTopScreenCurrent = true;
    }
    else
    {
       pglSelectScreen(GFX_BOTTOM, GFX_LEFT);
       glViewport(0, 0, LOWER_SCREEN_WIDTH, SCREEN_HEIGHT);
+      gIsTopScreenCurrent = false;
    }
+}
+
+bool IsTopScreenSelected3ds()
+{
+   return gIsTopScreenCurrent;
 }
