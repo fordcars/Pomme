@@ -14,6 +14,10 @@ static unsigned g3dsHeldButtons = 0;
 static float g3dsCPadX = 0.0f;
 static float g3dsCPadY = 0.0f;
 
+constexpr unsigned UPPER_SCREEN_WIDTH = 400;
+constexpr unsigned LOWER_SCREEN_WIDTH = 320;
+constexpr unsigned SCREEN_HEIGHT = 240;
+
 #ifdef ENABLE_USAGE_VISUALIZER_3DS
 #include "UsageVisualizer3ds.h"
 #endif
@@ -161,4 +165,19 @@ unsigned GetNewlyUpButtons3ds()
 unsigned GetHeldButtons3ds()
 {
    return g3dsHeldButtons;
+}
+
+// True for top screen, false for bottom screen
+void SelectTopScreen3ds(bool topScreen)
+{
+   if(topScreen)
+   {
+      pglSelectScreen(GFX_TOP, GFX_LEFT);
+      glViewport(0, 0, UPPER_SCREEN_WIDTH, SCREEN_HEIGHT);
+   }
+   else
+   {
+      pglSelectScreen(GFX_BOTTOM, GFX_LEFT);
+      glViewport(0, 0, LOWER_SCREEN_WIDTH, SCREEN_HEIGHT);
+   }
 }
