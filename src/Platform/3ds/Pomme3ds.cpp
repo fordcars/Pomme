@@ -75,8 +75,10 @@ static std::string GetResultSummary(int summaryCode)
 static void InitGFX()
 {
    gfxInit(GSP_RGBA8_OES,GSP_RGB565_OES,false); 
+#ifdef POMME_ENABLE_3DS_CONSOLE
    consoleInit(GFX_BOTTOM, consoleGetDefault());
    consoleDebugInit(debugDevice_CONSOLE);
+#endif
    pglInit();
 }
 
