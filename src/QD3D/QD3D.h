@@ -268,7 +268,12 @@ typedef struct TQ3PlaneEquation
 
 typedef struct TQ3TriMeshTriangleData
 {
+#ifdef __3DS__
+	// 3DS only supports GL_UNSIGNED_SHORT for glDrawElements and friends
+	uint16_t									pointIndices[3];
+#else
 	uint32_t									pointIndices[3];
+#endif
 } TQ3TriMeshTriangleData;
 
 // This structure differs from QD3D.

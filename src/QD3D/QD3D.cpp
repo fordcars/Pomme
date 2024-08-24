@@ -353,12 +353,21 @@ void Q3TriMeshData_SubdivideTriangles(TQ3TriMeshData* mesh)
 		   A        ^        C
 		*/
 
+#ifdef __3DS__
+		uint16_t A		= triangle.pointIndices[0];
+		uint16_t B		= triangle.pointIndices[1];
+		uint16_t C		= triangle.pointIndices[2];
+		uint16_t A2B	= triangleEdges[t*3 + 0]->midpoint;
+		uint16_t B2C	= triangleEdges[t*3 + 1]->midpoint;
+		uint16_t C2A	= triangleEdges[t*3 + 2]->midpoint;
+#else
 		uint32_t A		= triangle.pointIndices[0];
 		uint32_t B		= triangle.pointIndices[1];
 		uint32_t C		= triangle.pointIndices[2];
 		uint32_t A2B	= triangleEdges[t*3 + 0]->midpoint;
 		uint32_t B2C	= triangleEdges[t*3 + 1]->midpoint;
 		uint32_t C2A	= triangleEdges[t*3 + 2]->midpoint;
+#endif
 
 		mesh->triangles[numTrianglesWritten++]	= {{A2B, B, B2C} };
 		mesh->triangles[numTrianglesWritten++]	= {{B2C, C, C2A} };
