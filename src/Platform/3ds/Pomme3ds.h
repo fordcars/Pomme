@@ -40,8 +40,10 @@ void WaitForVBlank3ds();
 void SwapBuffers3ds();
 
 void ScanInput3ds();
-float Get3dsCPadX(); // [-1, 1]
-float Get3dsCPadY(); // [-1, 1]
+float Get3dsCPadX();  // [-1, 1]
+float Get3dsCPadY();  // [-1, 1]
+float Get3dsTouchX(); // [0, 320]
+float Get3dsTouchY(); // [0, 240]
 unsigned GetNewlyDownButtons3ds();
 unsigned GetNewlyUpButtons3ds();
 unsigned GetHeldButtons3ds();

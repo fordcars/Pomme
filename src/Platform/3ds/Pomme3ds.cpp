@@ -13,6 +13,8 @@ static unsigned g3dsNewlyUpButtons = 0;
 static unsigned g3dsHeldButtons = 0;
 static float g3dsCPadX = 0.0f;
 static float g3dsCPadY = 0.0f;
+static float g3dsTouchX = 0.0f;
+static float g3dsTouchY = 0.0f;
 
 constexpr unsigned UPPER_SCREEN_WIDTH = 400;
 constexpr unsigned LOWER_SCREEN_WIDTH = 320;
@@ -137,13 +139,20 @@ void ScanInput3ds()
    g3dsNewlyUpButtons = hidKeysUp();
    g3dsHeldButtons = hidKeysHeld();
 
-   // Returns values from around [-155, 155] for each axist.
+   // Update C-pad position
+   // Returns values from around [-155, 155] for each axis.
    circlePosition pos;
    hidCircleRead(&pos);
 
    float range = 155;
    g3dsCPadX = static_cast<float>(pos.dx) / range;
    g3dsCPadY = static_cast<float>(pos.dy) / range;
+
+   // Update touch position (in pixels)
+   touchPosition touch;
+   hidTouchRead(&touch);
+   g3dsTouchX =  touch.px;
+   g3dsTouchY =  touch.py;
 }
 
 float Get3dsCPadX()
@@ -154,6 +163,16 @@ float Get3dsCPadX()
 float Get3dsCPadY()
 {
    return g3dsCPadY;
+}
+
+float Get3dsTouchX()
+{
+   return g3dsTouchX;
+}
+
+float Get3dsTouchY()
+{
+   return g3dsTouchY;
 }
 
 unsigned GetNewlyDownButtons3ds()
