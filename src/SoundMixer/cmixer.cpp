@@ -92,7 +92,11 @@ void cmixer::InitWithSDL()
 
 	// Init SDL audio
 	SDL_AudioSpec fmt = {};
+#ifdef __3DS__
+	fmt.freq = 22050;
+#else
 	fmt.freq = 44100;
+#endif
 	fmt.format = AUDIO_S16SYS;
 	fmt.channels = 2;
 	fmt.samples = 1024;
