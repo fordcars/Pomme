@@ -2,5 +2,5 @@
 
 namespace UsageVisualizer3ds
 {
-    void update();
+	void update();
 }
